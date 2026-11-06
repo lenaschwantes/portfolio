@@ -23,6 +23,10 @@ body {
 
 a { color: var(--pink); }
 
+/* Pink pixel cursor */
+html { cursor: url("assets/cursor.svg") 0 0, auto; }
+a, button { cursor: url("assets/cursor-hand.svg") 9 0, pointer; }
+
 .pink { color: var(--pink); }
 .purple { color: var(--purple); }
 
@@ -250,7 +254,7 @@ h1 {
   color: inherit;
   font: inherit;
   text-align: left;
-  cursor: pointer;
+
 }
 
 .num { font-family: "JetBrains Mono", monospace; color: var(--pink); font-size: 0.85rem; }

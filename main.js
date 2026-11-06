@@ -59,7 +59,7 @@ cards.forEach((card) => {
 const steps = [
   ["EMBEDDING", "documents"],
   ["RETRIEVING", "context"],
-  ["AUDITING", "invoices"],
+  ["AUTOMATING", "the boring stuff"],
   ["SHIPPING", "agents"],
 ];
 const verb = document.querySelector(".prompt .verb");
