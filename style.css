@@ -26,9 +26,6 @@ a { color: var(--pink); }
 .pink { color: var(--pink); }
 .purple { color: var(--purple); }
 
-/* Placeholders still to be filled in */
-.todo { color: var(--pink); outline: 1px dashed var(--pink); outline-offset: 2px; }
-
 main > section,
 .hero {
   max-width: var(--max);
@@ -184,6 +181,30 @@ h1 {
   text-decoration: none;
 }
 
+/* Numbers */
+.stats {
+  display: grid;
+  gap: 32px;
+  padding-top: 64px;
+  padding-bottom: 64px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-num {
+  display: block;
+  font-size: clamp(2.6rem, 9vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(90deg, var(--pink), var(--purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat-label { display: block; margin-top: 8px; color: var(--muted); max-width: 18rem; }
+
 /* 2. Pillars */
 .pillars { padding-top: 96px; padding-bottom: 96px; }
 
@@ -281,9 +302,12 @@ h1 {
   font-size: clamp(1.6rem, 5vw, 2.6rem);
   line-height: 1.25;
   letter-spacing: -0.01em;
-  margin: 0 0 48px;
+  margin: 0 0 32px;
   max-width: 50rem;
 }
+
+.about-text { max-width: 44rem; margin-bottom: 48px; }
+.about-text p { color: var(--muted); font-size: 1.1rem; margin: 0 0 16px; }
 
 .facts { display: grid; gap: 24px; margin: 0; }
 .facts dt { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--muted); }
@@ -337,7 +361,7 @@ h1 {
   .hero { padding-top: 96px; }
   .hero-text { max-width: 56%; }
 
-  .facts { grid-template-columns: repeat(3, 1fr); }
+  .facts, .stats { grid-template-columns: repeat(3, 1fr); }
 
   /* Pinned pillars: panels stack on top of each other, JS swaps them */
   .pillars.is-pinned { height: 100vh; padding-top: 0; padding-bottom: 0; display: flex; align-items: center; }

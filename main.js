@@ -142,6 +142,20 @@ mm.add("(prefers-reduced-motion: no-preference)", () => {
     gsap.from(el, { opacity: 0, y: 40, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 88%" } });
   });
 
+  // Numbers count up when they enter the screen
+  document.querySelectorAll("[data-count]").forEach((el) => {
+    const target = Number(el.dataset.count);
+    const suffix = el.dataset.suffix || "";
+    const counter = { value: 0 };
+    gsap.to(counter, {
+      value: target,
+      duration: 1.6,
+      ease: "power2.out",
+      scrollTrigger: { trigger: el, start: "top 85%" },
+      onUpdate: () => { el.textContent = Math.round(counter.value) + suffix; },
+    });
+  });
+
   // Marquee speeds up while scrolling
   const marquee = document.querySelector(".marquee-track");
   ScrollTrigger.create({
