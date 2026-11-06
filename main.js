@@ -1,11 +1,10 @@
-// Rive mascot.
+// ---------- Rive mascot ----------
 // `expression` and `hover` are Node Script inputs. The web runtime cannot set
 // script inputs directly, so they must be bound (in the Rive editor) to a
-// View Model with a number "expression" and a boolean "hover". Here we write
-// to that View Model instance.
+// View Model with a number "expression" and a boolean "hover".
 
 const canvas = document.getElementById("robot");
-let vm = null; // auto-bound view model instance
+let vm = null;
 
 const robot = new rive.Rive({
   src: "assets/robocat.riv",
@@ -18,6 +17,8 @@ const robot = new rive.Rive({
     robot.resizeDrawingSurfaceToCanvas();
     vm = robot.viewModelInstance;
     if (!vm) {
+      // The current .riv has no View Model and does not draw the face: hide it until it is re-exported
+      canvas.style.visibility = "hidden";
       console.warn("Rive: no View Model bound. Bind the script inputs to a View Model in the editor.");
     }
   },
@@ -38,22 +39,9 @@ function setHover(value) {
 canvas.addEventListener("mouseenter", () => setHover(true));
 canvas.addEventListener("mouseleave", () => setHover(false));
 
-// Cards: fade in on scroll
+// ---------- Work cards: click/tap toggles, hover handled in CSS ----------
 const cards = document.querySelectorAll(".card");
 
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.15 });
-
-cards.forEach((card) => revealObserver.observe(card));
-
-// Cards: click/tap toggles details (hover opens them via CSS on desktop).
-// Hovering or opening a card also sets the robot's expression.
 cards.forEach((card) => {
   const head = card.querySelector(".card-head");
   const expression = Number(card.dataset.expression);
@@ -67,22 +55,164 @@ cards.forEach((card) => {
   card.addEventListener("mouseenter", () => setExpression(expression));
 });
 
-// The card crossing the middle of the screen sets the robot's expression.
-// Back in the hero, the robot goes neutral.
-const activeObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) return;
-    cards.forEach((c) => c.classList.remove("active"));
-    entry.target.classList.add("active");
-    setExpression(Number(entry.target.dataset.expression));
+// ---------- Hero prompt: cycles through what the pipeline does ----------
+const steps = [
+  ["EMBEDDING", "documents"],
+  ["RETRIEVING", "context"],
+  ["AUDITING", "invoices"],
+  ["SHIPPING", "agents"],
+];
+const verb = document.querySelector(".prompt .verb");
+const object = document.querySelector(".prompt .object");
+let step = 0;
+
+setInterval(() => {
+  step = (step + 1) % steps.length;
+  gsap.to([verb, object], {
+    opacity: 0, y: -6, duration: 0.2,
+    onComplete: () => {
+      [verb.textContent, object.textContent] = steps[step];
+      gsap.fromTo([verb, object], { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.25 });
+    },
   });
-}, { rootMargin: "-45% 0px -45% 0px" });
+}, 2400);
 
-cards.forEach((card) => activeObserver.observe(card));
+// ---------- Scroll animations ----------
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
-new IntersectionObserver(([entry]) => {
-  if (entry.isIntersecting) {
-    cards.forEach((c) => c.classList.remove("active"));
-    setExpression(0);
-  }
-}, { rootMargin: "-45% 0px -45% 0px" }).observe(document.querySelector(".hero"));
+const mm = gsap.matchMedia();
+
+// Things that run regardless of motion preference
+const progress = document.querySelector(".progress");
+ScrollTrigger.create({
+  start: 0,
+  end: "max",
+  onUpdate: (self) => gsap.set(progress, { scaleX: self.progress }),
+});
+
+// The card crossing the middle of the screen sets the robot's expression
+cards.forEach((card) => {
+  ScrollTrigger.create({
+    trigger: card,
+    start: "top 55%",
+    end: "bottom 45%",
+    onToggle: (self) => {
+      card.classList.toggle("active", self.isActive);
+      if (self.isActive) setExpression(Number(card.dataset.expression));
+    },
+  });
+});
+
+ScrollTrigger.create({
+  trigger: ".hero",
+  start: "top top",
+  end: "bottom 50%",
+  onEnterBack: () => setExpression(0),
+});
+
+mm.add("(prefers-reduced-motion: no-preference)", () => {
+  // Smooth scroll, driven by GSAP's ticker so ScrollTrigger stays in sync
+  const lenis = new Lenis({ anchors: true });
+  lenis.on("scroll", ScrollTrigger.update);
+  const raf = (time) => lenis.raf(time * 1000);
+  gsap.ticker.add(raf);
+  gsap.ticker.lagSmoothing(0);
+
+  // Headings: lines slide up from a mask
+  document.querySelectorAll(".split").forEach((el) => {
+    SplitText.create(el, {
+      type: "lines",
+      mask: "lines",
+      linesClass: "split-line",
+      autoSplit: true,
+      onSplit: (self) => gsap.from(self.lines, {
+        yPercent: 110,
+        duration: 0.9,
+        ease: "power4.out",
+        stagger: 0.08,
+        scrollTrigger: el.closest(".hero") ? undefined : { trigger: el, start: "top 85%" },
+      }),
+    });
+  });
+
+  gsap.from(".hero .lead, .hero-actions, .prompt", { opacity: 0, y: 20, duration: 0.8, delay: 0.4, stagger: 0.1 });
+
+  // Simple fade/slide reveals
+  gsap.utils.toArray(".card, .reveal").forEach((el) => {
+    gsap.from(el, { opacity: 0, y: 40, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 88%" } });
+  });
+
+  // Marquee speeds up while scrolling
+  const marquee = document.querySelector(".marquee-track");
+  ScrollTrigger.create({
+    trigger: ".marquee",
+    onUpdate: (self) => {
+      const boost = 1 + Math.min(Math.abs(self.getVelocity()) / 400, 4);
+      marquee.style.animationDuration = 30 / boost + "s";
+    },
+  });
+
+  return () => {
+    gsap.ticker.remove(raf);
+    lenis.destroy();
+  };
+});
+
+// Mascot flight: big in the hero, shrinks into the corner as the hero scrolls away
+mm.add({
+  desktop: "(min-width: 900px) and (prefers-reduced-motion: no-preference)",
+  mobile: "(max-width: 899px) and (prefers-reduced-motion: no-preference)",
+}, (ctx) => {
+  const { desktop } = ctx.conditions;
+  const mascot = document.querySelector(".mascot");
+
+  // Offset from the corner spot to the hero spot, measured on every refresh
+  const heroSpot = () => {
+    const r = mascot.getBoundingClientRect();
+    const cx = desktop ? innerWidth * 0.76 : innerWidth / 2;
+    const cy = desktop ? innerHeight * 0.52 : 150;
+    return { x: cx - (r.left + r.width / 2), y: cy - (r.top + r.height / 2) };
+  };
+
+  gsap.fromTo(mascot,
+    { x: () => heroSpot().x, y: () => heroSpot().y, scale: desktop ? 3 : 1.6 },
+    {
+      x: 0, y: 0, scale: 1, ease: "none",
+      immediateRender: true,
+      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom 40%", scrub: 0.6, invalidateOnRefresh: true },
+    });
+});
+
+// Pinned pillars on desktop: the section stays put while the three steps swap
+mm.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
+  const section = document.querySelector(".pillars");
+  const pillars = gsap.utils.toArray(".pillar");
+  const dots = gsap.utils.toArray(".pillar-dots span");
+  section.classList.add("is-pinned");
+
+  gsap.set(pillars, { opacity: 0, y: 60 });
+  gsap.set(pillars[0], { opacity: 1, y: 0 });
+  dots[0].classList.add("on");
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: "top top",
+      end: "+=" + innerHeight * 2,
+      pin: true,
+      scrub: 0.5,
+      onUpdate: (self) => {
+        const i = Math.min(2, Math.floor(self.progress * 3));
+        dots.forEach((d, j) => d.classList.toggle("on", j === i));
+      },
+    },
+  });
+
+  pillars.slice(1).forEach((p, i) => {
+    tl.to(pillars[i], { opacity: 0, y: -60, duration: 0.5 })
+      .to(p, { opacity: 1, y: 0, duration: 0.5 })
+      .to({}, { duration: 1 }); // hold
+  });
+
+  return () => section.classList.remove("is-pinned");
+});
