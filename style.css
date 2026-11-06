@@ -1,0 +1,227 @@
+:root {
+  --bg: #0B0E14;
+  --surface: #121722;
+  --border: #1F2633;
+  --text: #E6E8EE;
+  --muted: #8A93A6;
+  --pink: #FF6FA5;
+  --purple: #8B5CF6;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a { color: var(--pink); }
+
+/* Layout: content on the left, robot on the right (mobile: robot in the corner) */
+.layout {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Hero */
+.hero {
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 0;
+}
+
+.eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+h1 {
+  font-size: clamp(2rem, 7vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+
+.pink { color: var(--pink); }
+.purple { color: var(--purple); }
+
+.lead {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 34rem;
+  margin: 0 0 32px;
+}
+
+.btn {
+  align-self: flex-start;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pink), var(--purple));
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 111, 165, 0.25);
+}
+
+/* Work */
+.work { padding: 32px 0 64px; }
+
+h2 {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+}
+
+.card.visible { opacity: 1; transform: none; }
+.card.active, .card.open { border-color: var(--purple); }
+
+/* Header: always visible, click/tap toggles the details */
+.card-head {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 20px 24px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.num {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--pink);
+  font-size: 0.85rem;
+}
+
+.title { flex: 1; font-size: 1.25rem; font-weight: 700; }
+.title small { color: var(--muted); font-weight: 400; font-size: 0.85rem; margin-left: 6px; }
+
+.plus {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--muted);
+  transition: transform 0.3s, color 0.3s;
+}
+
+/* Details: collapsed until hover (desktop) or click/tap */
+.details {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.details > div { overflow: hidden; padding: 0 24px; }
+
+.card.open .details { grid-template-rows: 1fr; }
+.card.open .plus { transform: rotate(45deg); color: var(--pink); }
+
+@media (hover: hover) {
+  .card:hover .details { grid-template-rows: 1fr; }
+  .card:hover .plus { transform: rotate(45deg); color: var(--pink); }
+  .card:hover { border-color: var(--pink); }
+}
+
+.details p { color: var(--muted); margin: 0 0 16px; }
+.details .tags { padding-bottom: 20px; }
+
+.tags {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tags li {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.footer {
+  display: flex;
+  gap: 24px;
+  padding: 32px 0 140px;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+/* Robot: small companion fixed in the corner on mobile */
+.mascot {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 120px;
+  height: 120px;
+  z-index: 10;
+}
+
+.mascot canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Desktop: robot sits in a sticky right column next to hero and work */
+@media (min-width: 900px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 48px;
+    padding: 0 32px;
+  }
+
+  .mascot {
+    position: sticky;
+    top: calc(50vh - 210px);
+    right: auto;
+    bottom: auto;
+    width: 420px;
+    height: 420px;
+    align-self: start;
+    margin-top: calc(44vh - 210px);
+  }
+
+  .footer { padding-bottom: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
