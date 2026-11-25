@@ -1,0 +1,172 @@
+/* toolbox — fichário editorial com a alma do site original
+   cor: papel claro + tinta · rosa = ferramentas e marca · verde-azulado = repos (as cores do chaoticravena)
+   fontes: Young Serif (títulos, robusta, cara de rótulo de fichário) · Atkinson Hyperlegible Next (texto, feita para leitura fácil)
+           IBM Plex Mono (metadados, herdada do site original) · Press Start 2P (só os números de capítulo)
+   assinatura: números em pixel, carimbo "picked" nas escolhas a dedo, linhas finas de fichário */
+
+:root{
+  /* suíço técnico: branco frio, tinta, grade fina; limão ácido como campo de cor; rosa como assinatura */
+  --bg:#f3f3f1;--bg-2:#e7e7e4;--card:#ffffff;
+  --fg:#0e0e0e;--fg-2:#3a3a3a;--muted:#6a6a6a;
+  --line:#d4d4d0;--line-2:#b9b9b4;
+  --field:#d4ff3a;--field-ink:#0e0e0e;
+  /* rosa = só o que é pessoal (marca, escolhas, salvos, minha voz); interface genérica usa a tinta */
+  --me:#e5157f;
+  --me-ink:#c20f68;   /* rosa para texto pequeno: 4,9:1 sobre o fundo (o --me fica nos títulos grandes) */
+  --accent:var(--fg);--accent-ink:var(--bg);--mark:#d4ff3a;
+  --tool:#e5157f;--repo:#00806e;
+  --ok:#2f7d4f;--warn:#a86a00;--off:#8a857b;
+  --serif:'Archivo',system-ui,sans-serif;   /* display: Archivo larga e pesada (font-stretch nos títulos) */
+  --sans:'Archivo',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --pixel:'Press Start 2P',var(--mono);
+  --pixel-wide:'Silkscreen',var(--mono);   /* nome da marca e o TOOLBOX gigante */
+  --r:2px;
+  --s1:4px;--s2:8px;--s3:16px;--s4:24px;--s5:48px;--s6:96px;
+  --top:56px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e0e0e;--bg-2:#1a1a1a;--card:#141414;
+    --fg:#f2f2f0;--fg-2:#c8c8c4;--muted:#9a9a96;
+    --line:#2a2a2a;--line-2:#3c3c3c;
+    --me:#ff6eb4;
+    --me-ink:#ff6eb4;
+    --accent:var(--fg);--accent-ink:var(--bg);--mark:#4d5c10;
+    --tool:#ff6eb4;--repo:#2ec4b6;
+    --ok:#5fbf86;--warn:#e0a640;--off:#7c776e;
+  }
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.55 var(--sans);min-height:100vh;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::selection{background:var(--fg);color:var(--bg)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+mark{background:var(--mark);color:inherit;padding:0 1px}
+
+/* entrada e saída de página */
+body{transition:opacity .25s ease}
+body.leaving{opacity:0}
+
+/* ── barra superior ── */
+.topbar{
+  position:sticky;top:0;z-index:40;height:var(--top);display:flex;align-items:center;gap:var(--s4);
+  padding:0 var(--s4);background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:8px;font:800 22px/1 var(--serif);font-stretch:118%;text-decoration:none;letter-spacing:-.02em}
+.brand b{font-weight:400;color:var(--me)}
+.brand .wordmark{font:400 15px/1 var(--pixel-wide);font-stretch:normal;letter-spacing:0;text-transform:lowercase}
+/* só "ravena's" em pixel; "toolbox" na display larga */
+.brand .wordmark b{font:800 20px/1 var(--serif);font-stretch:118%;letter-spacing:-.03em;margin-left:2px}
+.brand svg{width:27px;height:25px;flex:none;color:var(--fg);overflow:visible}
+/* corvo: no hover bate as asas duas vezes, em quadros secos como sprite
+   f1 parado → f2 asa abrindo → f3 asa no alto → f4 asa descendo */
+.raven g{opacity:0}
+.raven .f1{opacity:1}
+.brand:hover .raven,.brand:focus-visible .raven{animation:hop .56s steps(1,end) 2}
+.brand:hover .raven .f1,.brand:focus-visible .raven .f1{animation:rv1 .56s steps(1,end) 2}
+.brand:hover .raven .f2,.brand:focus-visible .raven .f2{animation:rv2 .56s steps(1,end) 2}
+.brand:hover .raven .f3,.brand:focus-visible .raven .f3{animation:rv3 .56s steps(1,end) 2}
+.brand:hover .raven .f4,.brand:focus-visible .raven .f4{animation:rv4 .56s steps(1,end) 2}
+@keyframes rv1{0%{opacity:1}25%,100%{opacity:0}}
+@keyframes rv2{0%{opacity:0}25%{opacity:1}50%,100%{opacity:0}}
+@keyframes rv3{0%,25%{opacity:0}50%{opacity:1}75%,100%{opacity:0}}
+@keyframes rv4{0%,50%{opacity:0}75%,100%{opacity:1}}
+@keyframes hop{0%,75%{transform:none}25%,50%{transform:translateY(-2px)}}
+
+/* carimbo de "escolhido a dedo": tinta rosa, levemente torto, como num fichário */
+.stamp{display:inline-block;font:400 9px/1 var(--pixel);letter-spacing:.06em;text-transform:uppercase;color:var(--me-ink);
+  border:1.5px solid currentColor;padding:5px 6px 4px;transform:rotate(-4deg);border-radius:2px;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,currentColor 25%,transparent);opacity:.92;white-space:nowrap}
+.kind{display:inline-flex;align-items:center;gap:6px}
+.kind::before{content:'';width:8px;height:8px;background:var(--tool)}
+.kind.r::before{background:var(--repo);border-radius:50%}
+.topnav{display:flex;gap:var(--s1)}
+.topnav a{font-size:14px;font-weight:500;text-decoration:none;padding:6px 12px;color:var(--fg-2);border-radius:var(--r)}
+.topnav a:hover{color:var(--fg);background:var(--bg-2)}
+.topnav a[aria-current="page"]{color:var(--fg);box-shadow:inset 0 -3px 0 var(--me)}
+.topbar .spacer{flex:1}
+.topbar .hint{color:var(--muted)}
+.lang-btn{font:500 12px var(--mono);letter-spacing:.04em;padding:6px 9px;border:1px solid var(--line);border-radius:var(--r);color:var(--fg-2)}
+.lang-btn:hover{border-color:var(--fg);color:var(--fg)}
+.btn-saved{display:inline-flex;align-items:center;gap:6px;font-size:14px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--r)}
+.btn-saved:hover{border-color:var(--fg)}
+.btn-saved[aria-pressed="true"]{background:var(--me);color:#fff;border-color:var(--me)}
+.btn-saved #savedN{color:var(--me-ink)}
+.btn-saved[aria-pressed="true"] #savedN{color:#fff}
+
+/* ── botões ── */
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border:1px solid var(--fg);
+  border-radius:var(--r);font-size:14px;font-weight:500;text-decoration:none;background:transparent}
+.btn:hover{background:var(--fg);color:var(--bg)}
+.btn.primary{background:var(--field);border-color:#0e0e0e;color:var(--field-ink)}
+.btn.primary:hover{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.link{color:var(--fg);font-weight:500;text-decoration:underline;text-decoration-color:var(--line-2)}
+.link:hover{text-decoration-color:var(--accent)}
+
+/* ── formulários ── */
+.field{width:100%;min-height:44px;padding:0 14px;background:var(--card);border:1px solid var(--line-2);border-radius:var(--r);outline:none}
+.field:focus{border-color:var(--fg)}
+select.field{padding-right:32px;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.check{display:inline-flex;align-items:center;gap:8px;font-size:14px;min-height:44px;cursor:pointer;white-space:nowrap}
+.check input{accent-color:var(--accent);width:16px;height:16px}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.seg button{min-height:42px;padding:0 14px;font-size:14px;border-right:1px solid var(--line-2)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg .n{font-family:var(--mono);font-size:11px;opacity:.65;margin-left:4px}
+
+/* ── painel lateral (detalhes) ── */
+.scrim{position:fixed;inset:0;z-index:60;background:rgba(20,18,16,.28);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:61;width:min(520px,100%);background:var(--bg);
+  border-left:1px solid var(--line-2);box-shadow:-24px 0 48px rgba(0,0,0,.08);
+  transform:translateX(102%);transition:transform .32s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;height:var(--top);padding:0 var(--s4);border-bottom:1px solid var(--line)}
+.drawer-body{flex:1;overflow-y:auto;padding:var(--s4) var(--s4) var(--s5);overscroll-behavior:contain}
+.x{width:40px;height:40px;display:grid;place-items:center;font-size:22px;line-height:1;border-radius:var(--r)}
+.x:hover{background:var(--bg-2)}
+
+/* ── toast ── */
+.toast{position:fixed;left:50%;bottom:24px;z-index:80;transform:translate(-50%,20px);opacity:0;
+  background:var(--fg);color:var(--bg);padding:10px 16px;font-size:14px;border-radius:var(--r);
+  transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ── rodapé ── */
+.foot{border-top:1px solid var(--line);padding:var(--s5) var(--s4);display:grid;grid-template-columns:1fr auto;gap:var(--s4);color:var(--muted);font-size:14px}
+.foot a{color:var(--fg-2)}
+
+@media (max-width:760px){
+  :root{--top:52px}
+  .topbar{gap:var(--s2);padding:0 var(--s3)}
+  .brand{font-size:19px}
+  .topbar .hint,.topbar .long{display:none}
+  .brand .wordmark{font-size:12px}
+  .brand .wordmark b{font-size:17px}
+  .topnav a{white-space:nowrap}
+}
+@media (max-width:420px){
+  .topnav a[data-i18n-title="nav.skillTitle"]{display:none}   /* a skill continua no rodapé */
+  .topbar{gap:6px}
+  .topnav a{padding:6px 8px}
+  .brand svg{width:23px;height:22px}
+  .foot{grid-template-columns:1fr;padding:var(--s4) var(--s3)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:0s!important;animation-duration:0s!important}
+}
